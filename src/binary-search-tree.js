@@ -8,109 +8,122 @@ const {Node} = require('../extensions/list-tree.js');
  */
 class BinarySearchTree {
 
-    constructor() {
-        this.rootNode = null
-    }
+	constructor() {
+		this.rootNode = null
+	}
 
-    root() {
-        return this.rootNode
-    }
+	root() {
+		return this.rootNode
+	}
 
-    add(data) {
-        let newNode = new Node(data)
-        if (!this.rootNode) {
-            this.rootNode = newNode
-            return
-        }
+	add(data) {
+		let newNode = new Node(data)
+		if (!this.rootNode) {
+			this.rootNode = newNode
+			return
+		}
 
-        let currentValue = this.rootNode
+		let currentValue = this.rootNode
 
-        while (currentValue) {
-            if (currentValue.data > newNode.data) {
-                if (!currentValue.left) {
-                    currentValue.left = newNode
-                    return;
-                }
-                currentValue = currentValue.left
-            } else {
-                if (!currentValue.right) {
-                    currentValue.right = newNode
-                    return;
-                }
-                currentValue = currentValue.right
-            }
-        }
+		while (currentValue) {
+			if (currentValue.data > newNode.data) {
+				if (!currentValue.left) {
+					currentValue.left = newNode
+					return;
+				}
+				currentValue = currentValue.left
+			} else {
+				if (!currentValue.right) {
+					currentValue.right = newNode
+					return;
+				}
+				currentValue = currentValue.right
+			}
+		}
 
-    }
+	}
 
-    has(data) {
-        let res = false
-        this.traverseDFS(node => {
-            if (node.data === data) {
-                res = true
-            }
-        })
-        return res
-    }
+	has(data) {
+		let res = false
+		this.traverseDFS(node => {
+			if (node.data === data) {
+				res = true
+			}
+		})
+		return res
+	}
 
-    find(data) {
-        let res = null
-        this.traverseDFS(node => {
-            if (node.data === data) {
-                res = node
-            }
-        })
-        return res
-    }
+	find(data) {
+		let res = null
+		this.traverseDFS(node => {
+			if (node.data === data) {
+				res = node
+			}
+		})
+		return res
+	}
 
-    remove(data) {
-        let parentNode = null
-        let leftNode = null
-        let rightNode = null
+	remove(data) {
+		function removeNode(node, data) {
+			if (!node || (!node.left && !node.right)) {
+				return null;
+			}
 
-        this.traverseDFS(node => {
-            if (node.left !== null || !!node.right !== null) {
-                if ((node.left?.data === data) || (node.right?.data === data)) {
-                    parentNode = node
-                    leftNode = node.left
-                    rightNode = node.right
-                }
-            }
+			if (data > node.data) {
+				node.right = removeNode(node.right, data);
+				return node;
+			} else if (data < node.data) {
+				node.left = removeNode(node.left, data);
+				return node;
+			} else if (!node.left) {
+				return node.right
+			} else if (!node.right) {
+				return node.left
+			} else {
+				let min = node.right;
+				while (min.left) {
+					min = min.left;
+				}
+				node.data = min.data;
+				node.right = removeNode(node.right, min.data);
+				return node;
+			}
+		}
 
-        })
-tree.add(4)
-    }
+		this.rootNode = removeNode(this.rootNode, data);
 
-    min() {
-        let res = this.rootNode.data
-        this.traverseDFS(node => {
-            if (node.data < res) {
-                res = node.data
-            }
-        })
-        return res
-    }
+	}
 
-    max() {
-        let res = this.rootNode.data
-        this.traverseDFS(node => {
-            if (node.data > res) {
-                res = node.data
-            }
-        })
-        return res
-    }
+	min() {
+		let res = this.rootNode.data
+		this.traverseDFS(node => {
+			if (node.data < res) {
+				res = node.data
+			}
+		})
+		return res
+	}
 
-    preOrder(node, callback) {
-        if (!node) return;
-        if (callback) callback(node)
-        this.preOrder(node.left, callback)
-        this.preOrder(node.right, callback)
-    }
+	max() {
+		let res = this.rootNode.data
+		this.traverseDFS(node => {
+			if (node.data > res) {
+				res = node.data
+			}
+		})
+		return res
+	}
 
-    traverseDFS(callback) {
-        return this.preOrder(this.rootNode, callback)
-    }
+	preOrder(node, callback) {
+		if (!node) return;
+		if (callback) callback(node)
+		this.preOrder(node.left, callback)
+		this.preOrder(node.right, callback)
+	}
+
+	traverseDFS(callback) {
+		return this.preOrder(this.rootNode, callback)
+	}
 }
 
 let tree = new BinarySearchTree()
@@ -127,5 +140,5 @@ console.log(tree)
 
 
 module.exports = {
-    BinarySearchTree
+	BinarySearchTree
 };
